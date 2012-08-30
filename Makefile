@@ -1,6 +1,6 @@
 # Try "make help" first
 
-.DEFAULT_GOAL := sketch
+.DEFAULT_GOAL := library
 
 ##
 ## Useful paths, constants, etc.
@@ -13,6 +13,7 @@ SRCROOT := $(LIB_MAPLE_HOME)
 endif
 BUILD_PATH = build
 LIBMAPLE_PATH := $(SRCROOT)/libmaple
+LIBMAPLE_LIB_PATH := $(BUILD_PATH)
 WIRISH_PATH := $(SRCROOT)/wirish
 SUPPORT_PATH := $(SRCROOT)/support
 LIBRARIES_PATH := $(SRCROOT)/libraries
@@ -29,7 +30,7 @@ BOARD_INCLUDE_DIR := $(MAKEDIR)/board-includes
 
 # Try "make help" for more information on BOARD and MEMORY_TARGET;
 # these default to a Maple Flash build.
-BOARD ?= maple
+BOARD ?= maple_mini
 MEMORY_TARGET ?= flash
 
 # Chooses the bootloader, available: maple and robotis
@@ -57,16 +58,20 @@ include $(MAKEDIR)/build-templates.mk
 # or
 #     #include "wirish.h"
 # It slows compilation noticeably; remove after 1 release.
-TARGET_FLAGS    += -I$(LIBMAPLE_PATH)/include/libmaple                       \
-                   -I$(WIRISH_PATH)/include/wirish
-TARGET_FLAGS += -I$(LIBRARIES_PATH) # for internal lib. includes, e.g. <Wire/WireBase.h>
+TARGET_FLAGS    += \
+					-I$(LIBMAPLE_PATH)/include                      \
+					-I$(LIBMAPLE_PATH)/include/libmaple             \
+					-I$(WIRISH_PATH)/include						\
+					-I$(WIRISH_PATH)/include/wirish					\
+					-I${LIBMAPLE_MODULE_SERIES}/include				\
+					-I${WIRISH_PATH}/boards/$(BOARD)/include
 GLOBAL_CFLAGS   := -Os -g3 -gdwarf-2 -nostdlib \
                    -ffunction-sections -fdata-sections \
 		   -Wl,--gc-sections $(TARGET_FLAGS) \
 		   -DBOOTLOADER_$(BOOTLOADER)
 GLOBAL_CXXFLAGS := -fno-rtti -fno-exceptions -Wall $(TARGET_FLAGS)
 GLOBAL_ASFLAGS  := -x assembler-with-cpp $(TARGET_FLAGS)
-LDFLAGS  = $(TARGET_LDFLAGS) $(TOOLCHAIN_LDFLAGS) -mcpu=cortex-m3 -mthumb \
+LDFLAGS  = $(TARGET_LDFLAGS) $(TOOLCHAIN_LDFLAGS) -mcpu=cortex-m3 -mthumb\
            -Xlinker --gc-sections \
            -Xassembler --march=armv7-m -Wall
 #          -Xlinker --print-gc-sections \

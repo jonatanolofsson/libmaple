@@ -44,7 +44,7 @@
 #include <wirish/wirish.h>
 #include <libmaple/i2c.h>
 
-#define WIRE_BUFSIZ 32
+#define WIRE_BUFSIZ 256
 
 /* return codes from endTransmission() */
 #define SUCCESS   0        /* transmission was successful */
