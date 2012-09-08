@@ -99,6 +99,12 @@ public:
     uint8 requestFrom(uint8, int);
 
     /*
+     * Request bytes from a slave device and process the request,
+     * storing into an external buffer.
+     */
+    uint8 requestFrom(uint8, int, uint8*);
+
+    /*
      * Allow only 8 bit addresses to be used when requesting bytes
      */
     uint8 requestFrom(int, int);

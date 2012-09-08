@@ -85,6 +85,18 @@ uint8 WireBase::requestFrom(uint8 address, int num_bytes) {
     itc_msg.flags = 0;
     return rx_buf_len;
 }
+uint8 WireBase::requestFrom(uint8 address, int num_bytes, uint8* buffer) {
+    if (num_bytes > WIRE_BUFSIZ) {
+        num_bytes = WIRE_BUFSIZ;
+    }
+    itc_msg.addr = address;
+    itc_msg.flags = I2C_MSG_READ;
+    itc_msg.length = num_bytes;
+    itc_msg.data = buffer;
+    process();
+    itc_msg.flags = 0;
+    return itc_msg.xferred;
+}
 
 uint8 WireBase::requestFrom(int address, int numBytes) {
     return WireBase::requestFrom((uint8)address, numBytes);
