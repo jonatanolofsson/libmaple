@@ -113,6 +113,49 @@ public:
      *
      * @return true if successful, false when pin doesn't support PWM.
      */
+    Servo(uint8 pin,
+            uint16 minPulseWidth=SERVO_DEFAULT_MIN_PW,
+            uint16 maxPulseWidth=SERVO_DEFAULT_MAX_PW,
+            int16 minAngle=SERVO_DEFAULT_MIN_ANGLE,
+            int16 maxAngle=SERVO_DEFAULT_MAX_ANGLE)
+    {
+        attach(pin, minPulseWidth, maxPulseWidth, minAngle, maxAngle);
+    };
+
+    /**
+     * @brief Associate this instance with a servomotor whose input is
+     *        connected to pin.
+     *
+     * If this instance is already attached to a pin, it will be
+     * detached before being attached to the new pin. This function
+     * doesn't detach any interrupt attached with the pin's timer
+     * channel.
+     *
+     * @param pin Pin connected to the servo pulse wave input. This
+     *            pin must be capable of PWM output.
+     *
+     * @param minPulseWidth Minimum pulse width to write to pin, in
+     *                      microseconds.  This will be associated
+     *                      with a minAngle degree angle.  Defaults to
+     *                      SERVO_DEFAULT_MIN_PW = 544.
+     *
+     * @param maxPulseWidth Maximum pulse width to write to pin, in
+     *                      microseconds.  This will be associated
+     *                      with a maxAngle degree angle. Defaults to
+     *                      SERVO_DEFAULT_MAX_PW = 2400.
+     *
+     * @param minAngle Target angle (in degrees) associated with
+     *                 minPulseWidth.  Defaults to
+     *                 SERVO_DEFAULT_MIN_ANGLE = 0.
+     *
+     * @param maxAngle Target angle (in degrees) associated with
+     *                 maxPulseWidth.  Defaults to
+     *                 SERVO_DEFAULT_MAX_ANGLE = 180.
+     *
+     * @sideeffect May set pinMode(pin, PWM).
+     *
+     * @return true if successful, false when pin doesn't support PWM.
+     */
     bool attach(uint8 pin,
                 uint16 minPulseWidth=SERVO_DEFAULT_MIN_PW,
                 uint16 maxPulseWidth=SERVO_DEFAULT_MAX_PW,
@@ -182,6 +225,22 @@ public:
      * @see Servo::attach()
      */
     uint16 readMicroseconds() const;
+
+    /**
+     * @brief Set the pulse width, raw value.
+     *
+     * @param pulseWidth Raw pulse width to send to the servomotor.
+     *
+     * @see Servo::attach()
+     */
+    void set(uint16 pulseWidth);
+
+    /**
+     * Get the current pulse width, raw value.
+     *
+     * @see Servo::attach()
+     */
+    uint16 get() const;
 
 private:
     int16 pin;

@@ -118,6 +118,13 @@ int Servo::read() const {
     return a == this->minAngle || a == this->maxAngle ? a : a + 1;
 }
 
+void Servo::set(uint16 pulseWidth) {
+    if (!this->attached()) {
+        ASSERT(0);
+        return;
+    }
+    pwmWrite(this->pin, pulseWidth);
+}
 void Servo::writeMicroseconds(uint16 pulseWidth) {
     if (!this->attached()) {
         ASSERT(0);
@@ -128,6 +135,10 @@ void Servo::writeMicroseconds(uint16 pulseWidth) {
     pwmWrite(this->pin, US_TO_COMPARE(pulseWidth));
 }
 
+uint16 Servo::get() const {
+    stm32_pin_info pin_info = PIN_MAP[this->pin];
+    return timer_get_compare(pin_info.timer_device, pin_info.timer_channel);
+}
 uint16 Servo::readMicroseconds() const {
     if (!this->attached()) {
         ASSERT(0);
