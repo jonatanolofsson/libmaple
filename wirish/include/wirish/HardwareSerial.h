@@ -63,8 +63,10 @@ public:
     /* I/O */
     uint32 available(void);
     uint8 read(void);
+    void read(uint8 *buf, int len);
     void flush(void);
     virtual void write(unsigned char);
+    virtual void write(const void *buf, uint32 len);
     using Print::write;
 
     /* Pin accessors */

@@ -124,12 +124,46 @@ uint8 HardwareSerial::read(void) {
     return usart_getc(this->usart_device);
 }
 
+void HardwareSerial::read(uint8 *buf, int len) {
+    // Block until a byte becomes available, to save user confusion.
+    while(len > 0) {
+        *(buf++) = read();
+        --len;
+    }
+}
+
 uint32 HardwareSerial::available(void) {
     return usart_data_available(this->usart_device);
 }
 
 void HardwareSerial::write(unsigned char ch) {
     usart_putc(this->usart_device, ch);
+}
+void HardwareSerial::write(const void *buf, uint32 len) {
+    //~ Serial3.println("");
+    //~ int a = (int)len;
+    //~ Serial3.print("Length: ");
+    for(unsigned int i = 0; i < len; ++i) {
+        //~ if(i >= 10) {
+            //~ Serial3.print('1');
+            //~ Serial3.print((char)('0' + i - 10));
+        //~ } else {
+            //~ Serial3.print((char)(i+'0'));
+        //~ }
+        //~ Serial3.print(" / ");
+        //~ if(len >= 10) {
+            //~ Serial3.print('1');
+            //~ Serial3.print((char)('0' + len - 10));
+        //~ } else {
+            //~ Serial3.print((char)(len+'0'));
+        //~ }
+        //~ Serial3.print("\r\n");
+        usart_putc(this->usart_device, ((char*)buf)[i]);
+    }
+        //~ Serial3.print(i);
+        //~ Serial3.print(" / ");
+        //~ Serial3.print("\n");
+    //~ Serial3.print("\r\n");
 }
 
 void HardwareSerial::flush(void) {
