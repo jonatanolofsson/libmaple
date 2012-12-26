@@ -65,15 +65,16 @@ TARGET_FLAGS    += \
 					-I$(WIRISH_PATH)/include/wirish					\
 					-I${LIBMAPLE_MODULE_SERIES}/include				\
 					-I${WIRISH_PATH}/boards/$(BOARD)/include
+TARGET_FLAGS += -I$(LIBRARIES_PATH) # for internal lib. includes, e.g. <Wire/WireBase.h>
 GLOBAL_CFLAGS   := -Os -g3 -gdwarf-2 -nostdlib \
                    -ffunction-sections -fdata-sections \
 		   -Wl,--gc-sections $(TARGET_FLAGS) \
 		   -DBOOTLOADER_$(BOOTLOADER)
-GLOBAL_CXXFLAGS := -fno-rtti -fno-exceptions -Wall $(TARGET_FLAGS)
+GLOBAL_CXXFLAGS := -fno-rtti -fno-exceptions -Wall $(TARGET_FLAGS) -fdata-sections -ffunction-sections -Wl,-gc-sections
 GLOBAL_ASFLAGS  := -x assembler-with-cpp $(TARGET_FLAGS)
 LDFLAGS  = $(TARGET_LDFLAGS) $(TOOLCHAIN_LDFLAGS) -mcpu=cortex-m3 -mthumb\
            -Xlinker --gc-sections \
-           -Xassembler --march=armv7-m -Wall
+           -Xassembler --march=armv7-m -Wall -Wl,-gc-sections -fno-exceptions -fno-rtti
 #          -Xlinker --print-gc-sections \
 
 ##

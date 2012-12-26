@@ -12,7 +12,7 @@ CFLAGS_$(d) = $(LIBMAPLE_PRIVATE_INCLUDES) $(LIBMAPLE_INCLUDES) -Wall -Werror
 
 # Local rules and targets
 cSRCS_$(d) := adc.c
-cSRCS_$(d) += dac.c
+#~ cSRCS_$(d) += dac.c
 cSRCS_$(d) += dma.c
 cSRCS_$(d) += exti.c
 cSRCS_$(d) += flash.c

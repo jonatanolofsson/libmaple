@@ -20,7 +20,7 @@ CFLAGS_$(d) := $(LIBMAPLE_INCLUDES) $(WIRISH_INCLUDES) -I$(d)
 # Local rules and targets
 sSRCS_$(d) := start.S
 cSRCS_$(d) := start_c.c
-cSRCS_$(d) += syscalls.c
+#~ cSRCS_$(d) += syscalls.c
 cSRCS_$(d) += $(MCU_SERIES)/util_hooks.c
 cppSRCS_$(d) := boards.cpp
 cppSRCS_$(d) += cxxabi-compat.cpp
@@ -30,7 +30,7 @@ cppSRCS_$(d) += HardwareTimer.cpp
 cppSRCS_$(d) += Print.cpp
 cppSRCS_$(d) += pwm.cpp
 ifeq ($(MCU_SERIES), stm32f1)
-cppSRCS_$(d) += usb_serial.cpp	# HACK: this is currently STM32F1 only.
+#~ cppSRCS_$(d) += usb_serial.cpp	# HACK: this is currently STM32F1 only.
 cppSRCS_$(d) += HardwareSPI.cpp	# FIXME: port to F2 and fix wirish.h
 endif
 cppSRCS_$(d) += wirish_analog.cpp

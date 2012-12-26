@@ -1,11 +1,11 @@
 # Useful tools
 CROSS_COMPILE ?= arm-none-eabi-
 
-CC       := $(CROSS_COMPILE)gcc
-CXX      := $(CROSS_COMPILE)g++
+CC       := ccache $(CROSS_COMPILE)gcc
+CXX      := ccache $(CROSS_COMPILE)g++
 LD       := $(CROSS_COMPILE)ld -v
 AR       := $(CROSS_COMPILE)ar
-AS       := $(CROSS_COMPILE)gcc
+AS       := ccache $(CROSS_COMPILE)gcc
 OBJCOPY  := $(CROSS_COMPILE)objcopy
 DISAS    := $(CROSS_COMPILE)objdump
 OBJDUMP  := $(CROSS_COMPILE)objdump

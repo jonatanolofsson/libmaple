@@ -179,8 +179,11 @@ SECTIONS
         *(COMMON)
         . = ALIGN (8);
         __bss_end__ = .;
-        _end = __bss_end__;
+        /* _end = __bss_end__; */
       } > REGION_BSS
+      . = ALIGN(64 / 8);
+      _end = .; PROVIDE (end = .);
+
 
     /*
      * Debugging sections
