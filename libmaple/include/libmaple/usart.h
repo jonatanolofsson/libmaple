@@ -41,6 +41,7 @@ extern "C"{
 #include <libmaple/libmaple_types.h>
 #include <libmaple/util.h>
 #include <libmaple/rcc.h>
+#include <libmaple/dma.h>
 #include <libmaple/nvic.h>
 #include <libmaple/ring_buffer.h>
 #include <series/usart.h>
@@ -391,6 +392,10 @@ typedef struct usart_dev {
                                       * a future release. */
     rcc_clk_id clk_id;               /**< RCC clock information */
     nvic_irq_num irq_num;            /**< USART NVIC interrupt */
+    char dma_device_nr;
+    dma_dev* dma_device;
+    dma_tube dma_tx_tube;
+    dma_tube dma_rx_tube;
 } usart_dev;
 
 void usart_init(usart_dev *dev);

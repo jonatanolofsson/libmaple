@@ -35,6 +35,7 @@
 #include <libmaple/usart.h>
 #include <libmaple/gpio.h>
 #include "usart_private.h"
+#include <libmaple/dma.h>
 
 /*
  * Devices
@@ -47,6 +48,9 @@ static usart_dev usart1 = {
     .max_baud = 4500000UL,
     .clk_id   = RCC_USART1,
     .irq_num  = NVIC_USART1,
+    .dma_device_nr = 1,
+    .dma_tx_tube = DMA_CH4,
+    .dma_rx_tube = DMA_CH5,
 };
 /** USART1 device */
 usart_dev *USART1 = &usart1;
@@ -58,6 +62,9 @@ static usart_dev usart2 = {
     .max_baud = 2250000UL,
     .clk_id   = RCC_USART2,
     .irq_num  = NVIC_USART2,
+    .dma_device_nr = 1,
+    .dma_tx_tube = DMA_CH7,
+    .dma_rx_tube = DMA_CH6,
 };
 /** USART2 device */
 usart_dev *USART2 = &usart2;
@@ -69,6 +76,9 @@ static usart_dev usart3 = {
     .max_baud = 2250000UL,
     .clk_id   = RCC_USART3,
     .irq_num  = NVIC_USART3,
+    .dma_device_nr = 1,
+    .dma_tx_tube = DMA_CH2,
+    .dma_rx_tube = DMA_CH3,
 };
 /** USART3 device */
 usart_dev *USART3 = &usart3;
@@ -81,6 +91,9 @@ static usart_dev uart4 = {
     .max_baud = 2250000UL,
     .clk_id   = RCC_UART4,
     .irq_num  = NVIC_UART4,
+    .dma_device_nr = 2,
+    .dma_tx_tube = DMA_CH3,
+    .dma_rx_tube = DMA_CH5,
 };
 /** UART4 device */
 usart_dev *UART4 = &uart4;
@@ -92,6 +105,9 @@ static usart_dev uart5 = {
     .max_baud = 2250000UL,
     .clk_id   = RCC_UART5,
     .irq_num  = NVIC_UART5,
+    .dma_device_nr = 2,
+    .dma_tx_tube = DMA_CH3,
+    .dma_rx_tube = DMA_CH5,
 };
 /** UART5 device */
 usart_dev *UART5 = &uart5;

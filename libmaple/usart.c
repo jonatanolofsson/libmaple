@@ -33,6 +33,7 @@
  */
 
 #include <libmaple/usart.h>
+#include <libmaple/dma.h>
 
 /**
  * @brief Initialize a serial port.
@@ -42,6 +43,12 @@ void usart_init(usart_dev *dev) {
     rb_init(dev->rb, USART_RX_BUF_SIZE, dev->rx_buf);
     rcc_clk_enable(dev->clk_id);
     nvic_irq_enable(dev->irq_num);
+
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    dev->dma_device = (dev->dma_device_nr == 1 ? DMA1 : DMA2);
+#else
+    dev->dma_device = DMA1;
+#endif
 }
 
 /**

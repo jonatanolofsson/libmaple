@@ -57,6 +57,7 @@ HardWire::HardWire(uint8 dev_sel, uint8 flags) {
         ASSERT(1);
     }
     dev_flags=flags;
+    i2c_bus_reset(sel_hard);
     i2c_master_enable(sel_hard, flags);
 }
 

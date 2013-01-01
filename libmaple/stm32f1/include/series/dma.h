@@ -314,9 +314,9 @@ typedef struct dma_tube_reg_map {
  * Devices
  */
 
-extern dma_dev *DMA1;
+extern dma_dev *const DMA1;
 #if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
-extern dma_dev *DMA2;
+extern dma_dev *const DMA2;
 #endif
 
 /*
