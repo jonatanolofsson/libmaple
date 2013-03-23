@@ -39,7 +39,7 @@
 #include <Wire/HardWire.h>
 
 uint8 HardWire::process() {
-    int8 res = i2c_master_xfer(sel_hard, &itc_msg, 1, 0);
+    int8 res = i2c_master_xfer_async(sel_hard, &itc_msg, 1, 0);
     if (res != 0) {
         i2c_disable(sel_hard);
         i2c_master_enable(sel_hard, (I2C_BUS_RESET | dev_flags));

@@ -37,6 +37,7 @@
 #include <libmaple/spi.h>
 
 #include <wirish/boards.h>
+#include <wirish/dma_message.h>
 
 #ifndef _WIRISH_HARDWARESPI_H_
 #define _WIRISH_HARDWARESPI_H_
@@ -145,6 +146,20 @@ public:
      */
     void write(const uint8 *buffer, uint32 length);
 
+    void write(dma_message&);
+    int read(dma_message&);
+
+    void setup_dma_tx(void);
+    void setup_dma_rx(void);
+    void setup_dma() {
+        setup_dma_tx();
+        setup_dma_rx();
+    }
+    void dma_tx_wait(void);
+    void dma_rx_wait(void);
+    void irq_dma_tx(void);
+    void irq_dma_rx(void);
+
     /**
      * @brief Transmit a byte, then return the next unread byte.
      *
@@ -220,6 +235,11 @@ public:
     uint8 recv(void);
 private:
     spi_dev *spi_d;
+    dma_tube_config dmaTxConf;
+    dma_tube_config dmaRxConf;
+    int receivedBytes;
+    dma_message* dmaTx;
+    dma_message* dmaRx;
 };
 
 #endif

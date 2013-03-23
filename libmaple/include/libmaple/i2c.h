@@ -85,11 +85,16 @@ typedef struct i2c_reg_map {
     __io uint32 TRISE;          /**< TRISE (rise time) register */
 } i2c_reg_map;
 
+struct i2c_msg;
+typedef void(*i2c_callback)(struct i2c_msg*);
 /**
  * @brief I2C message type
  */
 typedef struct i2c_msg {
     uint16 addr;                /**< Address */
+
+    uint16 length;              /**< Message length */
+    uint8 *data;                /**< Data */
 
 #define I2C_MSG_READ            0x1
 #define I2C_MSG_10BIT_ADDR      0x2
@@ -99,9 +104,9 @@ typedef struct i2c_msg {
      * - I2C_MSG_10BIT_ADDR (7-bit is default) */
     uint16 flags;
 
-    uint16 length;              /**< Message length */
+    i2c_callback callback;
+    void* arg;
     uint16 xferred;             /**< Messages transferred */
-    uint8 *data;                /**< Data */
 } i2c_msg;
 
 /*
@@ -202,6 +207,7 @@ void i2c_master_enable(i2c_dev *dev, uint32 flags);
 #define I2C_ERROR_PROTOCOL      (-1)
 #define I2C_ERROR_TIMEOUT       (-2)
 int32 i2c_master_xfer(i2c_dev *dev, i2c_msg *msgs, uint16 num, uint32 timeout);
+int32 i2c_master_xfer_async(i2c_dev *dev, i2c_msg *msgs, uint16 num, uint32 timeout);
 
 void i2c_bus_reset(const i2c_dev *dev);
 
@@ -408,6 +414,13 @@ static inline void i2c_set_trise(i2c_dev *dev, uint32 trise) {
 
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef __cplusplus
+    template<typename T, void(T::*FN)(struct i2c_msg* msg)>
+    inline void i2cMemberCallback(struct i2c_msg* msg) {
+        (((T*)msg->arg)->*FN)(msg);
+    }
 #endif
 
 #endif

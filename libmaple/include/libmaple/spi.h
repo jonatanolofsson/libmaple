@@ -44,6 +44,7 @@ extern "C" {
 #include <libmaple/libmaple_types.h>
 #include <libmaple/rcc.h>
 #include <libmaple/nvic.h>
+#include <libmaple/dma.h>
 #include <series/spi.h>
 
 /*
@@ -204,6 +205,10 @@ typedef struct spi_dev {
     spi_reg_map *regs;          /**< Register map */
     rcc_clk_id clk_id;          /**< RCC clock information */
     nvic_irq_num irq_num;       /**< NVIC interrupt number */
+    char dma_device_nr;
+    dma_dev* dma_device;
+    dma_tube dma_tx_tube;
+    dma_tube dma_rx_tube;
 } spi_dev;
 
 /*

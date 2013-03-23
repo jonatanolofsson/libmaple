@@ -39,6 +39,7 @@
 #include <wirish/Print.h>
 #include <wirish/boards.h>
 #include <wirish/wirish.h>
+#include <wirish/dma_message.h>
 
 /*
  * IMPORTANT:
@@ -53,42 +54,7 @@
 struct usart_dev;
 
 
-struct dma_message {
-    volatile bool transmitting;
-    const char* data;
-    int length;
-
-    dma_message() : transmitting(false) {}
-
-    bool ready() {
-        return !transmitting;
-    }
-
-    void wait() {
-        while(!ready())
-            ;
-    }
-    void claim() {
-        transmitting = true;
-    }
-    void ret() {
-        transmitting = false;
-    }
-    dma_message& operator()(const char* const d, const int l) {
-        data = d;
-        length = l;
-        return *this;
-    }
-};
-
-typedef void(*dma_rx_callback)(uint8*, int, dma_irq_cause);
-
 class HardwareSerial : public Print {
-    dma_tube_config dmaTxConf;
-    dma_tube_config dmaRxConf;
-    dma_rx_callback dmaRxCallback;
-    bool dmaRxActive;
-    int receivedBytes;
 public:
     HardwareSerial(struct usart_dev *usart_device,
                    uint8 tx_pin,
@@ -101,33 +67,39 @@ public:
     /* I/O */
     uint32 available(void);
     uint8 read(void);
-    int read(uint8 *buf, int len, dma_rx_callback cb = NULL);
-    void flush(void);
     virtual void write(unsigned char);
+    int read(uint8 *buf, uint32 len);
     virtual void write(const void *buf, uint32 len);
+    int read(dma_message&);
     virtual void write(dma_message&);
     using Print::write;
+    void flush(void);
 
     /* Pin accessors */
     int txPin(void) { return this->tx_pin; }
     int rxPin(void) { return this->rx_pin; }
 
-    void dma_tx_wait(void);
-    void irq_dma_tx(void);
-    void irq_dma_rx(void);
     void setup_dma_tx(void);
     void setup_dma_rx(void);
     void setup_dma() {
         setup_dma_tx();
         setup_dma_rx();
     }
+    void dma_tx_wait(void);
+    void dma_rx_wait(void);
+    void irq_dma_tx(void);
+    void irq_dma_rx(void);
 
     /* Escape hatch into libmaple */
     /* FIXME [0.0.13] documentation */
     struct usart_dev* c_dev(void) { return this->usart_device; }
 private:
     struct usart_dev *usart_device;
+    dma_tube_config dmaTxConf;
+    dma_tube_config dmaRxConf;
+    int receivedBytes;
     dma_message* dmaTx;
+    dma_message* dmaRx;
     uint8 tx_pin;
     uint8 rx_pin;
 };

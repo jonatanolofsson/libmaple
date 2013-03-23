@@ -70,7 +70,7 @@ HardwareSerial::HardwareSerial(usart_dev *usart_device,
     this->tx_pin = tx_pin;
     this->rx_pin = rx_pin;
     this->dmaTx = NULL;
-    this->dmaRxActive = false;
+    this->dmaRx = NULL;
 }
 
 /*
@@ -121,6 +121,10 @@ void HardwareSerial::end(void) {
  * I/O
  */
 
+uint32 HardwareSerial::available(void) {
+    return usart_data_available(this->usart_device);
+}
+
 uint8 HardwareSerial::read(void) {
     // Block until a byte becomes available, to save user confusion.
     while (!this->available())
@@ -128,36 +132,50 @@ uint8 HardwareSerial::read(void) {
     return usart_getc(this->usart_device);
 }
 
-int HardwareSerial::read(uint8 *buf, int len, dma_rx_callback cb) {
-    if(dmaRxActive) return 0;
+void HardwareSerial::write(unsigned char ch) {
+    usart_putc(this->usart_device, ch);
+}
+
+int HardwareSerial::read(uint8 *buf, uint32 len) {
+    dma_message msg;
+    read(msg((const unsigned char* const)buf, len));
+    dma_rx_wait();
+    return len;
+}
+
+void HardwareSerial::write(const void *buf, uint32 len) {
+    dma_message msg;
+    write(msg((const unsigned char* const)buf, len));
+    dma_tx_wait();
+}
+
+void HardwareSerial::write(dma_message& newMsg) {
+    dma_tx_wait();
+    newMsg.claim();
+    dmaTx = &newMsg;
+    dmaTxConf.tube_src = (volatile char*)(dmaTx->data);
+    dmaTxConf.tube_nr_xfers = dmaTx->length;
+    int status = dma_tube_cfg(this->usart_device->dma_device, this->usart_device->dma_tx_tube, &dmaTxConf);
+    ASSERT(status == DMA_TUBE_CFG_SUCCESS);
+    dma_enable(this->usart_device->dma_device, this->usart_device->dma_tx_tube);
+}
+
+int HardwareSerial::read(dma_message& newMsg) {
+    if(dmaRx != NULL) return 0;
     if(receivedBytes > 0) {
         int r = receivedBytes;
         receivedBytes = 0;
         return r;
     }
-    dmaRxActive = true;
+    dmaRx = &newMsg;
     receivedBytes = 0;
-    dmaRxCallback = cb;
-    dmaRxConf.tube_dst = buf;
-    dmaRxConf.tube_nr_xfers = len;
+    dmaRxConf.tube_dst = (volatile char*)(dmaRx->data);
+    dmaRxConf.tube_nr_xfers = dmaRx->length;
 
     int status = dma_tube_cfg(this->usart_device->dma_device, this->usart_device->dma_rx_tube, &dmaRxConf);
     ASSERT(status == DMA_TUBE_CFG_SUCCESS);
     dma_enable(this->usart_device->dma_device, this->usart_device->dma_rx_tube);
     return 0;
-}
-
-uint32 HardwareSerial::available(void) {
-    return usart_data_available(this->usart_device);
-}
-
-void HardwareSerial::write(unsigned char ch) {
-    usart_putc(this->usart_device, ch);
-}
-void HardwareSerial::write(const void *buf, uint32 len) {
-    dma_message msg;
-    write(msg((const char* const)buf, len));
-    dma_tx_wait();
 }
 
 void HardwareSerial::irq_dma_tx(void) {
@@ -178,6 +196,9 @@ void HardwareSerial::irq_dma_tx(void) {
             // Should never happen.
             break;
     }
+    if(dmaTx->callback) {
+        (*(dmaTx->callback))(dmaTx, cause);
+    }
 }
 
 void irq_usart_dma_tx_1(void) {Serial1.irq_dma_tx();}
@@ -187,13 +208,13 @@ void irq_usart_dma_tx_3(void) {Serial3.irq_dma_tx();}
 void HardwareSerial::irq_dma_rx(void) {
     dma_irq_cause cause = dma_get_irq_cause(this->usart_device->dma_device, this->usart_device->dma_rx_tube);
     dma_disable(this->usart_device->dma_device, this->usart_device->dma_rx_tube);
-    dmaRxActive = false;
     if(DMA_TRANSFER_COMPLETE == cause) {
         receivedBytes = dmaRxConf.tube_nr_xfers;
     }
-    if(dmaRxCallback) {
-        (*dmaRxCallback)((uint8*)dmaRxConf.tube_dst, dmaRxConf.tube_dst_size, cause);
+    if(dmaRx->callback) {
+        (*(dmaRx->callback))(dmaRx, cause);
     }
+    dmaRx = NULL;
 }
 
 void irq_usart_dma_rx_1(void) {Serial1.irq_dma_rx();}
@@ -260,16 +281,8 @@ void HardwareSerial::setup_dma_rx(void) {
 void HardwareSerial::dma_tx_wait(void) {
     if(dmaTx) dmaTx->wait();
 }
-
-void HardwareSerial::write(dma_message& newMsg) {
-    dma_tx_wait();
-    newMsg.claim();
-    dmaTx = &newMsg;
-    dmaTxConf.tube_src = (volatile char*)(dmaTx->data);
-    dmaTxConf.tube_nr_xfers = dmaTx->length;
-    int status = dma_tube_cfg(this->usart_device->dma_device, this->usart_device->dma_tx_tube, &dmaTxConf);
-    ASSERT(status == DMA_TUBE_CFG_SUCCESS);
-    dma_enable(this->usart_device->dma_device, this->usart_device->dma_tx_tube);
+void HardwareSerial::dma_rx_wait(void) {
+    if(dmaRx) dmaRx->wait();
 }
 
 void HardwareSerial::flush(void) {

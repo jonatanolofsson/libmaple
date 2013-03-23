@@ -48,6 +48,12 @@ static void spi_reconfigure(spi_dev *dev, uint32 cr1_config);
 void spi_init(spi_dev *dev) {
     rcc_clk_enable(dev->clk_id);
     rcc_reset_dev(dev->clk_id);
+
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    dev->dma_device = (dev->dma_device_nr == 1 ? DMA1 : DMA2);
+#else
+    dev->dma_device = DMA1;
+#endif
 }
 
 /**

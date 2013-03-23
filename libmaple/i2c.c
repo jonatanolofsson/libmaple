@@ -201,7 +201,7 @@ void i2c_master_enable(i2c_dev *dev, uint32 flags) {
     /* Make it go! */
     i2c_peripheral_enable(dev);
 
-    dev->state = I2C_STATE_IDLE;
+    dev->state = I2C_STATE_XFER_DONE;
 }
 
 /**
@@ -224,9 +224,41 @@ int32 i2c_master_xfer(i2c_dev *dev,
                       i2c_msg *msgs,
                       uint16 num,
                       uint32 timeout) {
+    int rc = i2c_master_xfer_async(dev, msgs, num, timeout);
+
+    if(rc == 0) {
+        rc = wait_for_state_change(dev, I2C_STATE_XFER_DONE, timeout);
+    }
+
+    return rc;
+}
+
+/**
+ * @brief Process an i2c transaction.
+ *
+ * Transactions are composed of one or more i2c_msg's, and may be read
+ * or write tranfers.  Multiple i2c_msg's will generate a repeated
+ * start in between messages.
+ *
+ * @param dev I2C device
+ * @param msgs Messages to send/receive
+ * @param num Number of messages to send/receive
+ * @param timeout Bus idle timeout in milliseconds before aborting the
+ *                transfer.  0 denotes no timeout.
+ * @return 0 on success,
+ *         I2C_ERROR_PROTOCOL if there was a protocol error,
+ *         I2C_ERROR_TIMEOUT if the transfer timed out.
+ */
+int32 i2c_master_xfer_async(i2c_dev *dev,
+                      i2c_msg *msgs,
+                      uint16 num,
+                      uint32 timeout) {
     int32 rc;
 
-    ASSERT(dev->state == I2C_STATE_IDLE);
+    rc = wait_for_state_change(dev, I2C_STATE_XFER_DONE, timeout);
+    if (rc < 0) {
+        goto out;
+    }
 
     dev->msg = msgs;
     dev->msgs_left = num;
@@ -235,13 +267,6 @@ int32 i2c_master_xfer(i2c_dev *dev,
 
     i2c_enable_irq(dev, I2C_IRQ_EVENT);
     i2c_start_condition(dev);
-
-    rc = wait_for_state_change(dev, I2C_STATE_XFER_DONE, timeout);
-    if (rc < 0) {
-        goto out;
-    }
-
-    dev->state = I2C_STATE_IDLE;
 out:
     return rc;
 }
@@ -319,6 +344,7 @@ void _i2c_irq_handler(i2c_dev *dev) {
 
         i2c_send_slave_addr(dev, msg->addr, read);
         sr1 = sr2 = 0;
+        return;
     }
 
     /*
@@ -352,6 +378,7 @@ void _i2c_irq_handler(i2c_dev *dev) {
             }
         }
         sr1 = sr2 = 0;
+        return;
     }
 
     /*
@@ -378,6 +405,7 @@ void _i2c_irq_handler(i2c_dev *dev) {
             ASSERT(0);
         }
         sr1 = sr2 = 0;
+        return;
     }
 
     /*
@@ -411,6 +439,7 @@ void _i2c_irq_handler(i2c_dev *dev) {
             dev->state = I2C_STATE_XFER_DONE;
         }
         sr1 = sr2 = 0;
+        return;
     }
 
     /*
@@ -436,6 +465,7 @@ void _i2c_irq_handler(i2c_dev *dev) {
             }
         } else if (msg->xferred == msg->length) {
             dev->msgs_left--;
+            if(dev->msg->callback) (*(dev->msg->callback))(dev->msg);
             if (dev->msgs_left == 0) {
                 /*
                  * We're done.
@@ -446,6 +476,7 @@ void _i2c_irq_handler(i2c_dev *dev) {
                 dev->msg++;
             }
         }
+        return;
     }
 }
 

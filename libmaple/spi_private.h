@@ -26,12 +26,26 @@
 
 #ifndef _LIBMAPLE_SPI_PRIVATE_H_
 #define _LIBMAPLE_SPI_PRIVATE_H_
+#include <libmaple/dma.h>
+
+#define SPI1_DMA_DEV        1
+#define SPI2_DMA_DEV        1
+#define SPI3_DMA_DEV        2
+#define SPI1_DMA_RX         DMA_CH2
+#define SPI2_DMA_RX         DMA_CH4
+#define SPI3_DMA_RX         DMA_CH1
+#define SPI1_DMA_TX         DMA_CH3
+#define SPI2_DMA_TX         DMA_CH5
+#define SPI3_DMA_TX         DMA_CH2
 
 #define SPI_DEV(num)                              \
     {                                             \
         .regs    = SPI##num##_BASE,               \
         .clk_id  = RCC_SPI##num,                  \
         .irq_num = NVIC_SPI##num,                 \
+        .dma_device_nr = SPI##num##_DMA_DEV,      \
+        .dma_tx_tube = SPI##num##_DMA_TX,         \
+        .dma_rx_tube = SPI##num##_DMA_RX          \
     }
 
 #endif
