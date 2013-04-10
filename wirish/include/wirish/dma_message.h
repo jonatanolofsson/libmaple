@@ -4,7 +4,7 @@
 struct dma_message {
     volatile bool transmitting;
     void* arg;
-    const unsigned char* data;
+    volatile unsigned char* data;
     int length;
     typedef void(*dma_msg_callback)(dma_message*, dma_irq_cause);
     dma_msg_callback callback;
@@ -25,7 +25,7 @@ struct dma_message {
     void ret() {
         transmitting = false;
     }
-    dma_message& operator()(const unsigned char* const d, const int l, dma_msg_callback cb = NULL, void* a = NULL) {
+    dma_message& operator()(volatile unsigned char* const d, const int l, dma_msg_callback cb = NULL, void* a = NULL) {
         data = d;
         length = l;
         callback = cb;
@@ -34,4 +34,9 @@ struct dma_message {
     }
 };
 
+
+template<typename T, void(T::*FN)(dma_message* msg, dma_irq_cause cause)>
+inline void dmaMemberCallback(dma_message* msg, dma_irq_cause cause) {
+    (((T*)msg->arg)->*FN)(msg, cause);
+}
 #endif

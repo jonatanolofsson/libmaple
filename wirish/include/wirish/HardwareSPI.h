@@ -155,8 +155,7 @@ public:
         setup_dma_tx();
         setup_dma_rx();
     }
-    void dma_tx_wait(void);
-    void dma_rx_wait(void);
+    void dma_wait(void);
     void irq_dma_tx(void);
     void irq_dma_rx(void);
 
@@ -240,6 +239,18 @@ private:
     int receivedBytes;
     dma_message* dmaTx;
     dma_message* dmaRx;
+    dma_message emptyMessage;
 };
+
+
+#if BOARD_HAVE_SPI1
+extern HardwareSPI Spi1;
+#endif
+#if BOARD_HAVE_SPI2
+extern HardwareSPI Spi2;
+#endif
+#if BOARD_HAVE_SPI3
+extern HardwareSPI Spi3;
+#endif
 
 #endif

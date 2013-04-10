@@ -50,6 +50,8 @@ struct spi_pins {
     uint8 mosi;
 };
 
+static volatile unsigned char nothing[32] = {0};
+
 static const spi_pins* dev_to_spi_pins(spi_dev *dev);
 
 static void enable_device(spi_dev *dev,
@@ -194,8 +196,6 @@ uint8 HardwareSPI::transfer(uint8 byte) {
 }
 
 void HardwareSPI::write(dma_message& newMsg) {
-    dma_tx_wait();
-    newMsg.claim();
     dmaTx = &newMsg;
     dmaTxConf.tube_src = (volatile char*)(dmaTx->data);
     dmaTxConf.tube_nr_xfers = dmaTx->length;
@@ -203,14 +203,8 @@ void HardwareSPI::write(dma_message& newMsg) {
     ASSERT(status == DMA_TUBE_CFG_SUCCESS);
     dma_enable(this->spi_d->dma_device, this->spi_d->dma_tx_tube);
 }
-
+void print(int v, int base = 10);
 int HardwareSPI::read(dma_message& newMsg) {
-    if(dmaRx != NULL) return 0;
-    if(receivedBytes > 0) {
-        int r = receivedBytes;
-        receivedBytes = 0;
-        return r;
-    }
     dmaRx = &newMsg;
     receivedBytes = 0;
     dmaRxConf.tube_dst = (volatile char*)(dmaRx->data);
@@ -219,29 +213,17 @@ int HardwareSPI::read(dma_message& newMsg) {
     int status = dma_tube_cfg(this->spi_d->dma_device, this->spi_d->dma_rx_tube, &dmaRxConf);
     ASSERT(status == DMA_TUBE_CFG_SUCCESS);
     dma_enable(this->spi_d->dma_device, this->spi_d->dma_rx_tube);
+    write(emptyMessage(nothing, dmaRx->length));
     return 0;
 }
 
 void HardwareSPI::irq_dma_tx(void) {
     dma_irq_cause cause = dma_get_irq_cause(this->spi_d->dma_device, this->spi_d->dma_tx_tube);
     dma_disable(this->spi_d->dma_device, this->spi_d->dma_tx_tube);
-    dmaTx->ret();
-    switch(cause)
-    {
-        case DMA_TRANSFER_COMPLETE:
-            // Transfer completed
-            break;
-        case DMA_TRANSFER_ERROR:
-            // An error occurred during transfer
-            write(*dmaTx);
-            break;
-        default:
-            // Something went horribly wrong.
-            // Should never happen.
-            break;
-    }
-    if(dmaTx->callback) {
-        (*(dmaTx->callback))(dmaTx, cause);
+    dma_message* tmp = dmaTx;
+    dmaTx = NULL;
+    if(tmp->callback) {
+        (*(tmp->callback))(tmp, cause);
     }
 }
 
@@ -254,13 +236,11 @@ void irq_spi_dma_tx_3(void) {Spi3.irq_dma_tx();}
 void HardwareSPI::irq_dma_rx(void) {
     dma_irq_cause cause = dma_get_irq_cause(this->spi_d->dma_device, this->spi_d->dma_rx_tube);
     dma_disable(this->spi_d->dma_device, this->spi_d->dma_rx_tube);
-    if(DMA_TRANSFER_COMPLETE == cause) {
-        receivedBytes = dmaRxConf.tube_nr_xfers;
-    }
-    if(dmaRx->callback) {
-        (*(dmaRx->callback))(dmaRx, cause);
-    }
+    dma_message* tmp = dmaRx;
     dmaRx = NULL;
+    if(tmp->callback) {
+        (*(tmp->callback))(tmp, cause);
+    }
 }
 
 void irq_spi_dma_rx_1(void) {Spi1.irq_dma_rx();}
@@ -274,19 +254,19 @@ void HardwareSPI::setup_dma_tx(void) {
     #if BOARD_HAVE_SPI1
     if(this == &Spi1) {
         irq = irq_spi_dma_tx_1;
-        dmaRxConf.tube_req_src = DMA_REQ_SRC_SPI1_TX;
+        dmaTxConf.tube_req_src = DMA_REQ_SRC_SPI1_TX;
     }
     #endif
     #if BOARD_HAVE_SPI2
     else if(this == &Spi2) {
         irq = irq_spi_dma_tx_2;
-        dmaRxConf.tube_req_src = DMA_REQ_SRC_SPI2_TX;
+        dmaTxConf.tube_req_src = DMA_REQ_SRC_SPI2_TX;
     }
     #endif
     #if BOARD_HAVE_SPI3
     else if(this == &Spi3) {
         irq = irq_spi_dma_tx_3;
-        dmaRxConf.tube_req_src = DMA_REQ_SRC_SPI3_TX;
+        dmaTxConf.tube_req_src = DMA_REQ_SRC_SPI3_TX;
     }
     #endif
     else return;
@@ -303,7 +283,7 @@ void HardwareSPI::setup_dma_tx(void) {
                     DMA_CFG_CMPLT_IE);
     dmaTxConf.target_data = NULL;
 
-    //~ this->spi_d->regs->CR3 |= SPI_CR3_DMAT;
+    spi_tx_dma_enable(this->spi_d);
     dma_init(DMA1);
 }
 
@@ -341,14 +321,11 @@ void HardwareSPI::setup_dma_rx(void) {
                     DMA_CFG_CMPLT_IE);
     dmaRxConf.target_data = NULL;
 
-    //~ this->spi_d->regs->CR3 |= SPI_CR3_DMAR;
+    spi_rx_dma_enable(this->spi_d);
     dma_init(DMA1);
 }
-void HardwareSPI::dma_tx_wait(void) {
+void HardwareSPI::dma_wait(void) {
     if(dmaTx) dmaTx->wait();
-}
-void HardwareSPI::dma_rx_wait(void) {
-    if(dmaRx) dmaRx->wait();
 }
 
 /*

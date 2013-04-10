@@ -138,14 +138,14 @@ void HardwareSerial::write(unsigned char ch) {
 
 int HardwareSerial::read(uint8 *buf, uint32 len) {
     dma_message msg;
-    read(msg((const unsigned char* const)buf, len));
+    read(msg((volatile unsigned char* const)buf, len));
     dma_rx_wait();
     return len;
 }
 
 void HardwareSerial::write(const void *buf, uint32 len) {
     dma_message msg;
-    write(msg((const unsigned char* const)buf, len));
+    write(msg((volatile unsigned char* const)buf, len));
     dma_tx_wait();
 }
 
