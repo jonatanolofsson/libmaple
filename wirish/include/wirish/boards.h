@@ -135,9 +135,9 @@ bool boardUsesPin(uint8 pin);
 #define BOARD_HAVE_USART(n) (defined(BOARD_USART##n##_TX_PIN) && \
                              defined(BOARD_USART##n##_RX_PIN))
 /** Feature test: nonzero iff the board has USART1. */
-#define BOARD_HAVE_USART1               BOARD_HAVE_USART(1)
+#define BOARD_HAVE_USART1               (false && BOARD_HAVE_USART(1))
 /** Feature test: nonzero iff the board has USART2, 0 otherwise. */
-#define BOARD_HAVE_USART2               BOARD_HAVE_USART(2)
+#define BOARD_HAVE_USART2               (false && BOARD_HAVE_USART(2))
 /** Feature test: nonzero iff the board has USART3, 0 otherwise. */
 #define BOARD_HAVE_USART3               BOARD_HAVE_USART(3)
 /** Feature test: nonzero iff the board has UART4, 0 otherwise. */
@@ -167,7 +167,7 @@ bool boardUsesPin(uint8 pin);
 /**
  * @brief Feature test: nonzero iff the board has SerialUSB.
  */
-#define BOARD_HAVE_SERIALUSB (defined(BOARD_USB_DISC_DEV) && \
+#define BOARD_HAVE_SERIALUSB (false && defined(BOARD_USB_DISC_DEV) && \
                               defined(BOARD_USB_DISC_BIT))
 
 #endif

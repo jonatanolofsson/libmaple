@@ -61,9 +61,9 @@
 #define BOARD_SPI2_SCK_PIN        30
 
 #define BOARD_NR_GPIO_PINS        34
-#define BOARD_NR_PWM_PINS         12
+#define BOARD_NR_PWM_PINS         13
 #define BOARD_NR_ADC_PINS          9
-#define BOARD_NR_USED_PINS         4
+#define BOARD_NR_USED_PINS         2
 
 #define BOARD_JTMS_SWDIO_PIN      22
 #define BOARD_JTCK_SWCLK_PIN      21
@@ -71,8 +71,8 @@
 #define BOARD_JTDO_PIN            19
 #define BOARD_NJTRST_PIN          18
 
-#define BOARD_USB_DISC_DEV        GPIOB
-#define BOARD_USB_DISC_BIT        9
+//#define BOARD_USB_DISC_DEV        GPIOB
+//#define BOARD_USB_DISC_BIT        9
 
 enum {
     PB11, PB10, PB2, PB0, PA7, PA6, PA5, PA4, PA3, PA2, PA1, PA0, PC15, PC14,

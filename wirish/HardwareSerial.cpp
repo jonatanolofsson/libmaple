@@ -201,9 +201,15 @@ void HardwareSerial::irq_dma_tx(void) {
     }
 }
 
+#if BOARD_HAVE_USART1
 void irq_usart_dma_tx_1(void) {Serial1.irq_dma_tx();}
+#endif
+#if BOARD_HAVE_USART2
 void irq_usart_dma_tx_2(void) {Serial2.irq_dma_tx();}
+#endif
+#if BOARD_HAVE_USART3
 void irq_usart_dma_tx_3(void) {Serial3.irq_dma_tx();}
+#endif
 
 void HardwareSerial::irq_dma_rx(void) {
     dma_irq_cause cause = dma_get_irq_cause(this->usart_device->dma_device, this->usart_device->dma_rx_tube);
@@ -217,22 +223,37 @@ void HardwareSerial::irq_dma_rx(void) {
     dmaRx = NULL;
 }
 
+#if BOARD_HAVE_USART1
 void irq_usart_dma_rx_1(void) {Serial1.irq_dma_rx();}
+#endif
+#if BOARD_HAVE_USART2
 void irq_usart_dma_rx_2(void) {Serial2.irq_dma_rx();}
+#endif
+#if BOARD_HAVE_USART3
 void irq_usart_dma_rx_3(void) {Serial3.irq_dma_rx();}
+#endif
 
 void HardwareSerial::setup_dma_tx(void) {
     void(*irq)(void);
+    #if BOARD_HAVE_USART3
     if(this->tx_pin == Serial3.tx_pin) {
         irq = irq_usart_dma_tx_3;
         dmaTxConf.tube_req_src = DMA_REQ_SRC_USART3_TX;
-    } else if(this->tx_pin == Serial2.tx_pin) {
+    } else 
+    #endif
+    #if BOARD_HAVE_USART2
+    if(this->tx_pin == Serial2.tx_pin) {
         irq = irq_usart_dma_tx_2;
         dmaTxConf.tube_req_src = DMA_REQ_SRC_USART2_TX;
-    } else if(this->tx_pin == Serial1.tx_pin) {
+    } else 
+    #endif
+    #if BOARD_HAVE_USART1
+    if(this->tx_pin == Serial1.tx_pin) {
         irq = irq_usart_dma_tx_1;
         dmaTxConf.tube_req_src = DMA_REQ_SRC_USART1_TX;
-    } else return;
+    } else 
+    #endif
+    return;
 
     dma_attach_interrupt(this->usart_device->dma_device, this->usart_device->dma_tx_tube, irq);
 
@@ -251,16 +272,25 @@ void HardwareSerial::setup_dma_tx(void) {
 }
 void HardwareSerial::setup_dma_rx(void) {
     void(*irq)(void);
+    #if BOARD_HAVE_USART3
     if(this->rx_pin == Serial3.rx_pin) {
         irq = irq_usart_dma_rx_3;
         dmaRxConf.tube_req_src = DMA_REQ_SRC_USART3_RX;
-    } else if(this->rx_pin == Serial2.rx_pin) {
+    } else 
+    #endif
+    #if BOARD_HAVE_USART2
+    if(this->rx_pin == Serial2.rx_pin) {
         irq = irq_usart_dma_rx_2;
         dmaRxConf.tube_req_src = DMA_REQ_SRC_USART2_RX;
-    } else if(this->rx_pin == Serial1.rx_pin) {
+    } else
+    #endif
+    #if BOARD_HAVE_USART1
+    if(this->rx_pin == Serial1.rx_pin) {
         irq = irq_usart_dma_rx_1;
         dmaRxConf.tube_req_src = DMA_REQ_SRC_USART1_RX;
-    } else return;
+    } else 
+    #endif
+    return;
 
     dma_attach_interrupt(this->usart_device->dma_device, this->usart_device->dma_rx_tube, irq);
 

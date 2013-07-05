@@ -90,7 +90,7 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
 };
 
 extern const uint8 boardPWMPins[BOARD_NR_PWM_PINS] __FLASH__ = {
-    3, 4, 5, 8, 9, 10, 11, 15, 16, 25, 26, 27
+    3, 4, 5, 8, 9, 10, 11, 15, 16, 24, 25, 26, 27
 };
 
 extern const uint8 boardADCPins[BOARD_NR_ADC_PINS] __FLASH__ = {
@@ -101,5 +101,5 @@ extern const uint8 boardADCPins[BOARD_NR_ADC_PINS] __FLASH__ = {
 #define USB_DM 24
 
 extern const uint8 boardUsedPins[BOARD_NR_USED_PINS] __FLASH__ = {
-    BOARD_LED_PIN, BOARD_BUTTON_PIN, USB_DP, USB_DM
+    BOARD_LED_PIN, BOARD_BUTTON_PIN//, USB_DP, USB_DM
 };
