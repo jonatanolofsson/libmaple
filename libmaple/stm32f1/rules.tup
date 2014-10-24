@@ -1,0 +1,2 @@
+: foreach $(TUP_CWD)/*.c |> !cc |> $(TUP_CWD)/%B.o
+: foreach $(TUP_CWD)/@(MCU_F1_LINE)/*.S |> !asm |> $(TUP_CWD)/%B.o

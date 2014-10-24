@@ -1,0 +1,28 @@
+include_rules
+CFILES  = adc.c
+# CFILES += dac.c
+CFILES += dma.c
+CFILES += exti.c
+CFILES += flash.c
+CFILES += gpio.c
+CFILES += iwdg.c
+CFILES += nvic.c
+CFILES += pwr.c
+CFILES += rcc.c
+CFILES += spi.c
+CFILES += systick.c
+CFILES += timer.c
+CFILES += usart.c
+CFILES += usart_private.c
+CFILES += util.c
+CFILES += i2c.c
+
+SFILES += exc.S
+
+include @(MCU_SERIES)/rules.tup
+ifdef INCLUDE_USB
+    include usb/rules.tup
+endif
+
+: foreach $(CFILES) |> !cc |>
+: foreach $(SFILES) |> !asm |>

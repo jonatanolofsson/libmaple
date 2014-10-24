@@ -1,0 +1,29 @@
+include_rules
+
+SFILES  = start.S
+CFILES  = start_c.c
+
+CXXFILES  = boards.cpp
+CXXFILES += cxxabi-compat.cpp
+CXXFILES += ext_interrupts.cpp
+CXXFILES += HardwareSerial.cpp
+CXXFILES += HardwareTimer.cpp
+CXXFILES += Print.cpp
+CXXFILES += pwm.cpp
+CXXFILES += wirish_analog.cpp
+CXXFILES +=	wirish_digital.cpp
+CXXFILES +=	wirish_math.cpp
+CXXFILES +=	wirish_shift.cpp
+CXXFILES +=	wirish_time.cpp
+include @(MCU_SERIES)/rules.tup
+include boards/@(BOARD)/rules.tup
+CXXFILES += boards/@(BOARD)/board.cpp
+ifeq (@(MCU_SERIES), stm32f1)
+    #CXXFILES += usb_serial.cpp	# HACK: this is currently STM32F1 only.
+    CXXFILES += HardwareSPI.cpp	# FIXME: port to F2 and fix wirish.h
+endif
+
+
+: foreach $(CFILES) |> !cc |>
+: foreach $(CXXFILES) |> !cxx |>
+: foreach $(SFILES) |> !asm |>

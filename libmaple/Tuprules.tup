@@ -1,0 +1,2 @@
+CFLAGS += -I$(TUP_CWD)
+ASFLAGS += -I$(TUP_CWD)

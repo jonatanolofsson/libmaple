@@ -1,0 +1,2 @@
+include_rules
+: <libmaple> |> $(AR) crs %o %<libmaple> |> libmaple.a
