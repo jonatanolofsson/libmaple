@@ -74,8 +74,8 @@ const adc_dev *ADC3 = &adc3;
  * @param dev adc device
  */
 void adc_calibrate(const adc_dev *dev) {
-    __io uint32 *rstcal_bit = bb_perip(&(dev->regs->CR2), 3);
-    __io uint32 *cal_bit = bb_perip(&(dev->regs->CR2), 2);
+    volatile uint32 *rstcal_bit = bb_perip(&(dev->regs->CR2), 3);
+    volatile uint32 *cal_bit = bb_perip(&(dev->regs->CR2), 2);
 
     *rstcal_bit = 1;
     while (*rstcal_bit)

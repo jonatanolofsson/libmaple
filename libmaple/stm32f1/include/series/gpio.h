@@ -48,13 +48,13 @@ extern "C"{
 
 /** GPIO register map type */
 typedef struct gpio_reg_map {
-    __io uint32 CRL;      /**< Port configuration register low */
-    __io uint32 CRH;      /**< Port configuration register high */
-    __io uint32 IDR;      /**< Port input data register */
-    __io uint32 ODR;      /**< Port output data register */
-    __io uint32 BSRR;     /**< Port bit set/reset register */
-    __io uint32 BRR;      /**< Port bit reset register */
-    __io uint32 LCKR;     /**< Port configuration lock register */
+    volatile uint32 CRL;      /**< Port configuration register low */
+    volatile uint32 CRH;      /**< Port configuration register high */
+    volatile uint32 IDR;      /**< Port input data register */
+    volatile uint32 ODR;      /**< Port output data register */
+    volatile uint32 BSRR;     /**< Port bit set/reset register */
+    volatile uint32 BRR;      /**< Port bit reset register */
+    volatile uint32 LCKR;     /**< Port configuration lock register */
 } gpio_reg_map;
 
 struct gpio_dev;
@@ -145,13 +145,13 @@ typedef enum gpio_pin_mode {
 
 /** AFIO register map */
 typedef struct afio_reg_map {
-    __io uint32 EVCR;    /**< Event control register.  */
-    __io uint32 MAPR;    /**< AF remap and debug I/O configuration register. */
-    __io uint32 EXTICR1; /**< External interrupt configuration register 1. */
-    __io uint32 EXTICR2; /**< External interrupt configuration register 2. */
-    __io uint32 EXTICR3; /**< External interrupt configuration register 3. */
-    __io uint32 EXTICR4; /**< External interrupt configuration register 4. */
-    __io uint32 MAPR2;   /**<
+    volatile uint32 EVCR;    /**< Event control register.  */
+    volatile uint32 MAPR;    /**< AF remap and debug I/O configuration register. */
+    volatile uint32 EXTICR1; /**< External interrupt configuration register 1. */
+    volatile uint32 EXTICR2; /**< External interrupt configuration register 2. */
+    volatile uint32 EXTICR3; /**< External interrupt configuration register 3. */
+    volatile uint32 EXTICR4; /**< External interrupt configuration register 4. */
+    volatile uint32 MAPR2;   /**<
                           * AF remap and debug I/O configuration register 2. */
 } afio_reg_map;
 
@@ -402,7 +402,7 @@ typedef enum afio_debug_cfg {
  * @see afio_debug_cfg
  */
 static inline void afio_cfg_debug_ports(afio_debug_cfg config) {
-    __io uint32 *mapr = &AFIO_BASE->MAPR;
+    volatile uint32 *mapr = &AFIO_BASE->MAPR;
     *mapr = (*mapr & ~AFIO_MAPR_SWJ_CFG) | config;
 }
 

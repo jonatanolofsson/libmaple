@@ -53,10 +53,10 @@ extern "C"{
 
 /** Independent watchdog register map type. */
 typedef struct iwdg_reg_map {
-    __io uint32 KR;             /**< Key register. */
-    __io uint32 PR;             /**< Prescaler register. */
-    __io uint32 RLR;            /**< Reload register. */
-    __io uint32 SR;             /**< Status register */
+    volatile uint32 KR;             /**< Key register. */
+    volatile uint32 PR;             /**< Prescaler register. */
+    volatile uint32 RLR;            /**< Reload register. */
+    volatile uint32 SR;             /**< Status register */
 } iwdg_reg_map;
 
 /** Independent watchdog base pointer */

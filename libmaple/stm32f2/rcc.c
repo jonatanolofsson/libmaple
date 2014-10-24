@@ -111,7 +111,7 @@ const struct rcc_dev_info rcc_dev_table[] = {
 };
 
 void rcc_clk_enable(rcc_clk_id id) {
-    static __io uint32* enable_regs[] = {
+    static volatile uint32* enable_regs[] = {
         [RCC_AHB1] = &RCC_BASE->AHB1ENR,
         [RCC_AHB2] = &RCC_BASE->AHB2ENR,
         [RCC_AHB3] = &RCC_BASE->AHB3ENR,
@@ -122,7 +122,7 @@ void rcc_clk_enable(rcc_clk_id id) {
 }
 
 void rcc_reset_dev(rcc_clk_id id) {
-    static __io uint32* reset_regs[] = {
+    static volatile uint32* reset_regs[] = {
         [RCC_AHB1] = &RCC_BASE->AHB1RSTR,
         [RCC_AHB2] = &RCC_BASE->AHB2RSTR,
         [RCC_AHB3] = &RCC_BASE->AHB3RSTR,

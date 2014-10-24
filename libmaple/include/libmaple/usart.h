@@ -52,13 +52,13 @@ extern "C"{
 
 /** USART register map type */
 typedef struct usart_reg_map {
-    __io uint32 SR;             /**< Status register */
-    __io uint32 DR;             /**< Data register */
-    __io uint32 BRR;            /**< Baud rate register */
-    __io uint32 CR1;            /**< Control register 1 */
-    __io uint32 CR2;            /**< Control register 2 */
-    __io uint32 CR3;            /**< Control register 3 */
-    __io uint32 GTPR;           /**< Guard time and prescaler register */
+    volatile uint32 SR;             /**< Status register */
+    volatile uint32 DR;             /**< Data register */
+    volatile uint32 BRR;            /**< Baud rate register */
+    volatile uint32 CR1;            /**< Control register 1 */
+    volatile uint32 CR2;            /**< Control register 2 */
+    volatile uint32 CR3;            /**< Control register 3 */
+    volatile uint32 GTPR;           /**< Guard time and prescaler register */
 } usart_reg_map;
 
 /*

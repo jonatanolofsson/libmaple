@@ -44,16 +44,16 @@ extern "C"{
 
 /** GPIO register map type */
 typedef struct gpio_reg_map {
-    __io uint32 MODER;          /**< Mode register */
-    __io uint32 OTYPER;         /**< Output type register */
-    __io uint32 OSPEEDR;        /**< Output speed register */
-    __io uint32 PUPDR;          /**< Pull-up/pull-down register */
-    __io uint32 IDR;            /**< Input data register */
-    __io uint32 ODR;            /**< Output data register */
-    __io uint32 BSRR;           /**< Bit set/reset register */
-    __io uint32 LCKR;           /**< Configuration lock register */
-    __io uint32 AFRL;           /**< Alternate function low register */
-    __io uint32 AFRH;           /**< Alternate function high register */
+    volatile uint32 MODER;          /**< Mode register */
+    volatile uint32 OTYPER;         /**< Output type register */
+    volatile uint32 OSPEEDR;        /**< Output speed register */
+    volatile uint32 PUPDR;          /**< Pull-up/pull-down register */
+    volatile uint32 IDR;            /**< Input data register */
+    volatile uint32 ODR;            /**< Output data register */
+    volatile uint32 BSRR;           /**< Bit set/reset register */
+    volatile uint32 LCKR;           /**< Configuration lock register */
+    volatile uint32 AFRL;           /**< Alternate function low register */
+    volatile uint32 AFRH;           /**< Alternate function high register */
 } gpio_reg_map;
 
 /** GPIO port A register map base pointer */

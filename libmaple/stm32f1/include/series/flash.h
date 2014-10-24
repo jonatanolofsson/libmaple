@@ -48,14 +48,14 @@ extern "C"{
 
 /** @brief STM32F1 Flash register map type */
 typedef struct flash_reg_map {
-    __io uint32 ACR;            /**< Access control register */
-    __io uint32 KEYR;           /**< Key register */
-    __io uint32 OPTKEYR;        /**< OPTKEY register */
-    __io uint32 SR;             /**< Status register */
-    __io uint32 CR;             /**< Control register */
-    __io uint32 AR;             /**< Address register */
-    __io uint32 OBR;            /**< Option byte register */
-    __io uint32 WRPR;           /**< Write protection register */
+    volatile uint32 ACR;            /**< Access control register */
+    volatile uint32 KEYR;           /**< Key register */
+    volatile uint32 OPTKEYR;        /**< OPTKEY register */
+    volatile uint32 SR;             /**< Status register */
+    volatile uint32 CR;             /**< Control register */
+    volatile uint32 AR;             /**< Address register */
+    volatile uint32 OBR;            /**< Option byte register */
+    volatile uint32 WRPR;           /**< Write protection register */
 } flash_reg_map;
 
 #define FLASH_BASE                      ((struct flash_reg_map*)0x40022000)

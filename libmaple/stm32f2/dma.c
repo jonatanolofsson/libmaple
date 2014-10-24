@@ -171,7 +171,7 @@ void dma_set_num_transfers(dma_dev *dev, dma_tube tube, uint16 num_transfers) {
  * @param address Address to set
  */
 void dma_set_mem_n_addr(dma_dev *dev, dma_tube tube, int n,
-                        __io void *address) {
+                        volatile void *address) {
     dma_tube_reg_map *tregs = dma_tube_regs(dev, tube);
     uint32 addr = (uint32)address;
 
@@ -183,7 +183,7 @@ void dma_set_mem_n_addr(dma_dev *dev, dma_tube tube, int n,
     }
 }
 
-void dma_set_per_addr(dma_dev *dev, dma_tube tube, __io void *address) {
+void dma_set_per_addr(dma_dev *dev, dma_tube tube, volatile void *address) {
     dma_tube_reg_map *tregs = dma_tube_regs(dev, tube);
     ASSERT_NOT_ENABLED(dev, tube);
     tregs->SPAR = (uint32)address;
@@ -341,13 +341,13 @@ void __irq_dma2_stream7(void) {
  */
 
 /* Is addr acceptable for use as DMA src/dst? */
-static int cfg_mem_ok(__io void *addr) {
+static int cfg_mem_ok(volatile void *addr) {
     enum dma_atype atype = _dma_addr_type(addr);
     return atype == DMA_ATYPE_MEM || atype == DMA_ATYPE_PER;
 }
 
 /* Is src -> dst a reasonable combination of [MEM,PER] -> [MEM,PER]? */
-static int cfg_dir_ok(dma_dev *dev, __io void *src, __io void *dst) {
+static int cfg_dir_ok(dma_dev *dev, volatile void *src, volatile void *dst) {
     switch (_dma_addr_type(dst)) {
     case DMA_ATYPE_MEM:
         /* Only DMA2 can do memory-to-memory */

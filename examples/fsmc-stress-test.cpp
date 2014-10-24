@@ -29,15 +29,15 @@
 #define MEM_SIZE 0x3FFF
 
 // Their start addresses in FSMC bank 1
-__io uint16 *const starts[N] = {
-    // (__io uint16 *const)FSMC_NOR_PSRAM_REGION1,
-    // (__io uint16 *const)FSMC_NOR_PSRAM_REGION2,
-    (__io uint16 *const)FSMC_NOR_PSRAM_REGION3,
-    // (__io uint16 *const)FSMC_NOR_PSRAM_REGION4,
+volatile uint16 *const starts[N] = {
+    // (volatile uint16 *const)FSMC_NOR_PSRAM_REGION1,
+    // (volatile uint16 *const)FSMC_NOR_PSRAM_REGION2,
+    (volatile uint16 *const)FSMC_NOR_PSRAM_REGION3,
+    // (volatile uint16 *const)FSMC_NOR_PSRAM_REGION4,
 };
 
 // Corresponding FSMC configuration registers
-__io uint32 *const bcrs[N] = {
+volatile uint32 *const bcrs[N] = {
     // &FSMC_NOR_PSRAM1_BASE->BCR,
     // &FSMC_NOR_PSRAM2_BASE->BCR,
     &FSMC_NOR_PSRAM3_BASE->BCR,
@@ -45,7 +45,7 @@ __io uint32 *const bcrs[N] = {
 };
 
 // Corresponding FSMC timing registers
-__io uint32 *const btrs[N] = {
+volatile uint32 *const btrs[N] = {
     // &FSMC_NOR_PSRAM1_BASE->BTR,
     // &FSMC_NOR_PSRAM2_BASE->BTR,
     &FSMC_NOR_PSRAM3_BASE->BTR,
@@ -143,7 +143,7 @@ bool simple_roundtrip(void) {
     uint16 wval = 0xAB;
 
     for (int i = 0; i < N; i++) {
-        __io uint16 *addr = starts[i] + 4;
+        volatile uint16 *addr = starts[i] + 4;
         snprintf(snprintf_buf, sizeof snprintf_buf, "round-trip 0x%x at %p",
                  wval, addr);
         SerialUSB.println(snprintf_buf);
@@ -168,7 +168,7 @@ bool random_trips(void) {
     SerialUSB.println("[random]");
 #endif
     for (int n = 0; n < N; n++) {
-        __io uint16 *const start = starts[n];
+        volatile uint16 *const start = starts[n];
 
         for (int i = 0; i < 1000; i++) {
             uint32 offset = rand(MEM_SIZE);
@@ -192,7 +192,7 @@ bool sequential_trips(void) {
     SerialUSB.println("[seq]");
 #endif
     for (int n = 0; n < N; n++) {
-        __io uint16 *const start = starts[n];
+        volatile uint16 *const start = starts[n];
 
         for (int i = 0; i < 100; i++) {
             uint32 start_offset = rand(MEM_SIZE - seq_length);
