@@ -19,10 +19,5 @@ CFILES += i2c.c
 
 SFILES += exc.S
 
-include @(MCU_SERIES)/rules.tup
-ifdef INCLUDE_USB
-    include usb/rules.tup
-endif
-
 : foreach $(CFILES) |> !cc |>
 : foreach $(SFILES) |> !asm |>

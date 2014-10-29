@@ -1,0 +1,4 @@
+ifeq (@(MCU_SERIES),stm32f1)
+include_rules
+: foreach *.c |> !cc |>
+endif

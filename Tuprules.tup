@@ -16,28 +16,28 @@ DFU      = dfu-util
 TARGET_FLAGS  = -mcpu=cortex-m3
 TARGET_FLAGS += -march=armv7-m
 TARGET_FLAGS += -mthumb
+TARGET_FLAGS += -DBOOTLOADER_maple
 TARGET_FLAGS += -DMCU_@(MCU)
+TARGET_FLAGS += -DBOARD_@(BOARD)
 TARGET_FLAGS += -DERROR_LED_PORT=@(ERROR_LED_PORT)
 TARGET_FLAGS += -DERROR_LED_PIN=@(ERROR_LED_PIN)
-ifeq (@(MEMORY_TARGET), ram)
-    TARGET_FLAGS += VECT_TAB_RAM
+ifeq (@(MEMORY_TARGET),ram)
+    TARGET_FLAGS += -DVECT_TAB_RAM
 endif
-ifeq (@(MEMORY_TARGET), flash)
-    TARGET_FLAGS += VECT_TAB_FLASH
+ifeq (@(MEMORY_TARGET),flash)
+    TARGET_FLAGS += -DVECT_TAB_FLASH
 endif
-ifeq (@(MEMORY_TARGET), jtag)
-    TARGET_FLAGS += VECT_TAB_BASE
+ifeq (@(MEMORY_TARGET),jtag)
+    TARGET_FLAGS += -DVECT_TAB_BASE
 endif
 
 
 CFLAGS  = $(TARGET_FLAGS)
 CFLAGS += -Os
-CFLAGS += -g3
-CFLAGS += -gdwarf-2
+#CFLAGS += -g3 -gdwarf-2
 CFLAGS += -nostdlib
 CFLAGS += -ffunction-sections
 CFLAGS += -fdata-sections
-CFLAGS += -Wl,--gc-sections
 CFLAGS += -Wall
 CFLAGS += -Werror
 CFLAGS += -Wno-unknown-pragmas
@@ -57,4 +57,3 @@ INCLUDE_FLAGS += -I$(TUP_CWD)/wirish/boards/@(BOARD)/include
 !cc = |> ^o^ $(CC) $(CFLAGS) $(INCLUDE_FLAGS) -c %f -o %o |> %B.o $(TOP)/<libmaple>
 !cxx = |> ^o^ $(CXX) $(CXXFLAGS) $(INCLUDE_FLAGS) -c %f -o %o |> %B.o $(TOP)/<libmaple>
 !asm = |> $(AS) $(ASFLAGS) $(INCLUDE_FLAGS) -c %f -o %o |> %B.o $(TOP)/<libmaple>
-!lib = |> $(AR) crs %o %f |> lib%d.a

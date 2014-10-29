@@ -1,1 +1,0 @@
-: foreach $(TUP_CWD)/*.cpp |> !cxx |> $(TUP_CWD)/%B.o

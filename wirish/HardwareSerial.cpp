@@ -239,19 +239,19 @@ void HardwareSerial::setup_dma_tx(void) {
     if(this->tx_pin == Serial3.tx_pin) {
         irq = irq_usart_dma_tx_3;
         dmaTxConf.tube_req_src = DMA_REQ_SRC_USART3_TX;
-    } else 
+    } else
     #endif
     #if BOARD_HAVE_USART2
     if(this->tx_pin == Serial2.tx_pin) {
         irq = irq_usart_dma_tx_2;
         dmaTxConf.tube_req_src = DMA_REQ_SRC_USART2_TX;
-    } else 
+    } else
     #endif
     #if BOARD_HAVE_USART1
     if(this->tx_pin == Serial1.tx_pin) {
         irq = irq_usart_dma_tx_1;
         dmaTxConf.tube_req_src = DMA_REQ_SRC_USART1_TX;
-    } else 
+    } else
     #endif
     return;
 
@@ -276,7 +276,7 @@ void HardwareSerial::setup_dma_rx(void) {
     if(this->rx_pin == Serial3.rx_pin) {
         irq = irq_usart_dma_rx_3;
         dmaRxConf.tube_req_src = DMA_REQ_SRC_USART3_RX;
-    } else 
+    } else
     #endif
     #if BOARD_HAVE_USART2
     if(this->rx_pin == Serial2.rx_pin) {
@@ -288,7 +288,7 @@ void HardwareSerial::setup_dma_rx(void) {
     if(this->rx_pin == Serial1.rx_pin) {
         irq = irq_usart_dma_rx_1;
         dmaRxConf.tube_req_src = DMA_REQ_SRC_USART1_RX;
-    } else 
+    } else
     #endif
     return;
 

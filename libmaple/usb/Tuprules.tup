@@ -1,0 +1,3 @@
+ifdef INCLUDE_USB
+INCLUDE_FLAGS += -I$(TUP_CWD)/usb_lib
+endif

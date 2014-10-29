@@ -1,0 +1,6 @@
+ifeq (@(MCU_SERIES),stm32f1)
+ifeq (@(MCU_F1_LINE),performance)
+include_rules
+: foreach *.S |> !asm |>
+endif
+endif

@@ -1,0 +1,5 @@
+ifdef INCLUDE_USB
+include_rules
+: foreach *.c |> !cc |>
+endif
+

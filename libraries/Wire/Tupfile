@@ -1,2 +1,6 @@
 include_rules
-: foreach *.cpp |> !cxx |>
+FILES  = HardWire.cpp
+FILES += WireBase.cpp
+FILES += Wire.cpp
+: foreach $(FILES) |> !cxx |>
+

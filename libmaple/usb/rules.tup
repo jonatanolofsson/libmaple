@@ -1,2 +1,0 @@
-CFILES += $(TUP_CWD)/@(MCU_SERIES)/*.c
-CFILES += $(TUP_CWD)/usb_lib/*.c

@@ -1,0 +1,5 @@
+ifeq (@(BOARD),maple_mini)
+include_rules
+: foreach *.cpp |> !cxx |>
+endif
+
