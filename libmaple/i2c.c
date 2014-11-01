@@ -456,7 +456,7 @@ void _i2c_irq_handler(i2c_dev *dev) {
          */
         if (msg->xferred == (msg->length - 1)) {
             i2c_disable_ack(dev);
-            if (dev->msgs_left > 2) {
+            if (dev->msgs_left > 1) {
                 i2c_start_condition(dev);
                 I2C_CRUMB(RXNE_START_SENT, 0, 0);
             } else {
