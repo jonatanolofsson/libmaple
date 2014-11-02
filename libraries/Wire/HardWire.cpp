@@ -61,6 +61,10 @@ HardWire::HardWire(uint8 dev_sel, uint8 flags) {
     i2c_master_enable(sel_hard, flags);
 }
 
+void HardWire::wait(uint32 timeout) {
+    i2c_wait_for_state_change(sel_hard, I2C_STATE_XFER_DONE, timeout);
+}
+
 HardWire::~HardWire() {
     i2c_disable(sel_hard);
     sel_hard = 0;

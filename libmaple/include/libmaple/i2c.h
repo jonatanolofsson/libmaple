@@ -71,6 +71,7 @@ extern "C" {
 #include <libmaple/rcc.h>
 #include <libmaple/nvic.h>
 #include <libmaple/gpio.h>
+#include <libmaple/systick.h>
 
 /** I2C register map type */
 typedef struct i2c_reg_map {
@@ -411,6 +412,40 @@ static inline void i2c_set_clk_control(i2c_dev *dev, uint32 val) {
 static inline void i2c_set_trise(i2c_dev *dev, uint32 trise) {
     dev->regs->TRISE = trise;
 }
+
+/**
+ * @brief Wait for an I2C event, or time out in case of error.
+ * @param dev I2C device
+ * @param state I2C_state state to wait for
+ * @param timeout Timeout, in milliseconds
+ * @return 0 if target state is reached, a negative value on error.
+ */
+static inline int32 i2c_wait_for_state_change(i2c_dev *dev,
+                                              i2c_state state,
+                                              uint32 timeout) {
+    i2c_state tmp;
+
+    while (1) {
+        tmp = dev->state;
+
+        if (tmp == I2C_STATE_ERROR) {
+            return I2C_STATE_ERROR;
+        }
+
+        if (tmp == state) {
+            return 0;
+        }
+
+        if (timeout) {
+            if (systick_uptime() > (dev->timestamp + timeout)) {
+                /* TODO: overflow? */
+                /* TODO: racy? */
+                return I2C_ERROR_TIMEOUT;
+            }
+        }
+    }
+}
+
 
 #ifdef __cplusplus
 }

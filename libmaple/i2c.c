@@ -44,9 +44,6 @@
 
 #include <string.h>
 
-static inline int32 wait_for_state_change(i2c_dev *dev,
-                                          i2c_state state,
-                                          uint32 timeout);
 static void set_ccr_trise(i2c_dev *dev, uint32 flags);
 
 /**
@@ -227,7 +224,7 @@ int32 i2c_master_xfer(i2c_dev *dev,
     int rc = i2c_master_xfer_async(dev, msgs, num, timeout);
 
     if(rc == 0) {
-        rc = wait_for_state_change(dev, I2C_STATE_XFER_DONE, timeout);
+        rc = i2c_wait_for_state_change(dev, I2C_STATE_XFER_DONE, timeout);
     }
 
     return rc;
@@ -255,7 +252,7 @@ int32 i2c_master_xfer_async(i2c_dev *dev,
                       uint32 timeout) {
     int32 rc;
 
-    rc = wait_for_state_change(dev, I2C_STATE_XFER_DONE, timeout);
+    rc = i2c_wait_for_state_change(dev, I2C_STATE_XFER_DONE, timeout);
     if (rc < 0) {
         goto out;
     }
@@ -269,39 +266,6 @@ int32 i2c_master_xfer_async(i2c_dev *dev,
     i2c_start_condition(dev);
 out:
     return rc;
-}
-
-/**
- * @brief Wait for an I2C event, or time out in case of error.
- * @param dev I2C device
- * @param state I2C_state state to wait for
- * @param timeout Timeout, in milliseconds
- * @return 0 if target state is reached, a negative value on error.
- */
-static inline int32 wait_for_state_change(i2c_dev *dev,
-                                          i2c_state state,
-                                          uint32 timeout) {
-    i2c_state tmp;
-
-    while (1) {
-        tmp = dev->state;
-
-        if (tmp == I2C_STATE_ERROR) {
-            return I2C_STATE_ERROR;
-        }
-
-        if (tmp == state) {
-            return 0;
-        }
-
-        if (timeout) {
-            if (systick_uptime() > (dev->timestamp + timeout)) {
-                /* TODO: overflow? */
-                /* TODO: racy? */
-                return I2C_ERROR_TIMEOUT;
-            }
-        }
-    }
 }
 
 /*

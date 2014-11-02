@@ -64,6 +64,11 @@ public:
      * Disables the I2C device and remove the device address.
      */
     ~HardWire();
+
+   /*
+    * Wait for completion
+    */
+    void wait(uint32 timeout = 0);
 };
 
 #endif // _HARDWIRE_H_
