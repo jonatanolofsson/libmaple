@@ -1,1 +1,4 @@
 *.o
+build/
+libmaple.a
+main.cpp
